@@ -1,5 +1,7 @@
 package thedrake;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class GameState {
@@ -70,6 +72,8 @@ public class GameState {
         if(result != GameResult.IN_PLAY){
             return false;
         }
+        if(origin == TilePos.OFF_BOARD)
+            return false;
         switch (sideOnTurn) {
             case BLUE -> {
                 if(!blueArmy.boardTroops().isPlacingGuards() && blueArmy.boardTroops().isLeaderPlaced()){
@@ -89,6 +93,10 @@ public class GameState {
         if(result != GameResult.IN_PLAY){
             return false;
         }
+        if(target == TilePos.OFF_BOARD)
+            return false;
+        if(blueArmy.boardTroops().troopPositions().contains(target) || orangeArmy.boardTroops().troopPositions().contains(target))
+            return false;
         return board.at(target).canStepOn();
     }
 
@@ -98,11 +106,11 @@ public class GameState {
         }
         switch (sideOnTurn){
             case BLUE -> {
-                if(orangeArmy.boardTroops().at(target) != null)
+                if(orangeArmy.boardTroops().troopPositions().contains(target))
                     return true;
             }
             case ORANGE -> {
-                if(blueArmy.boardTroops().at(target) != null)
+                if(blueArmy.boardTroops().troopPositions().contains(target))
                     return true;
             }
         }
@@ -118,20 +126,54 @@ public class GameState {
     }
 
     public boolean canPlaceFromStack(TilePos target) {
+        List<BoardPos> tmp = new ArrayList<>();
+        tmp.addAll(blueArmy.boardTroops().troopPositions());
+        tmp.addAll(orangeArmy.boardTroops().troopPositions());
         if(result != GameResult.IN_PLAY){
             return false;
         }
+        if(target == TilePos.OFF_BOARD)
+            return false;
         switch (sideOnTurn){
             case BLUE -> {
                 if(blueArmy.stack().isEmpty())
                     return false;
+                if(!blueArmy.boardTroops().isLeaderPlaced()){
+                    if(target.j() > 0)
+                        return false;
+                }
+                else if(blueArmy.boardTroops().isPlacingGuards()){
+                    if(!blueArmy.boardTroops().leaderPosition().isNextTo(target) || tmp.contains(target))
+                        return false;
+                }else{
+                    for (BoardPos i: blueArmy.boardTroops().troopPositions()) {
+                        if(i.isNextTo(target))
+                            return board.at(target).canStepOn() && !tmp.contains(target);
+                    }
+                    return false;
+                }
             }
             case ORANGE -> {
                 if(orangeArmy.stack().isEmpty())
                     return false;
+                if(!orangeArmy.boardTroops().isLeaderPlaced()){
+                    if(target.j() + 1 != board.dimension() || (blueArmy.boardTroops().leaderPosition().i() == target.i()))
+                        return false;
+                }
+                else if(orangeArmy.boardTroops().isPlacingGuards()){
+                    if(!orangeArmy.boardTroops().leaderPosition().isNextTo(target) || tmp.contains(target))
+                        return false;
+                }else{
+                    for (BoardPos i: orangeArmy.boardTroops().troopPositions()) {
+                        if(i.isNextTo(target))
+                            return board.at(target).canStepOn() && !tmp.contains(target);
+                    }
+                    return false;
+                }
+
             }
         }
-        return board.at(target).canStepOn();
+        return true;
     }
 
     public GameState stepOnly(BoardPos origin, BoardPos target) {
@@ -182,7 +224,6 @@ public class GameState {
                     armyOnTurn().placeFromStack(target),
                     GameResult.IN_PLAY);
         }
-
         throw new IllegalArgumentException();
     }
 

@@ -17,7 +17,6 @@ public class ShiftAction extends TroopAction {
     public List<Move> movesFrom(BoardPos origin, PlayingSide side, GameState state) {
         List<Move> result = new ArrayList<>();
         TilePos target = origin.stepByPlayingSide(offset(), side);
-
         if (state.canStep(origin, target)) {
             result.add(new StepOnly(origin, (BoardPos) target));
         } else if (state.canCapture(origin, target)) {

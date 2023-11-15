@@ -63,8 +63,10 @@ public class GameState {
     }
 
     public Tile tileAt(TilePos pos) {
-        if(blueArmy.boardTroops().at(pos) != null || orangeArmy.boardTroops().at(pos) != null)
-            return null;
+        if(blueArmy.boardTroops().at(pos).isPresent())
+            return blueArmy.boardTroops().at(pos).get();
+        if(orangeArmy.boardTroops().at(pos).isPresent())
+            return orangeArmy.boardTroops().at(pos).get();
         return board.at(pos);
     }
 
@@ -77,12 +79,12 @@ public class GameState {
         switch (sideOnTurn) {
             case BLUE -> {
                 if(!blueArmy.boardTroops().isPlacingGuards() && blueArmy.boardTroops().isLeaderPlaced()){
-                    return blueArmy.boardTroops().at(origin) != null;
+                    return blueArmy.boardTroops().at(origin).isPresent();
                 }
             }
             case ORANGE -> {
                 if(orangeArmy.boardTroops().isLeaderPlaced() && !orangeArmy.boardTroops().isPlacingGuards()){
-                    return orangeArmy.boardTroops().at(origin) != null;
+                    return orangeArmy.boardTroops().at(origin).isPresent();
                 }
             }
         }
@@ -95,7 +97,7 @@ public class GameState {
         }
         if(target == TilePos.OFF_BOARD)
             return false;
-        if(blueArmy.boardTroops().troopPositions().contains(target) || orangeArmy.boardTroops().troopPositions().contains(target))
+        if(blueArmy.boardTroops().at(target).isPresent() || orangeArmy.boardTroops().at(target).isPresent())
             return false;
         return board.at(target).canStepOn();
     }
@@ -106,11 +108,11 @@ public class GameState {
         }
         switch (sideOnTurn){
             case BLUE -> {
-                if(orangeArmy.boardTroops().troopPositions().contains(target))
+                if(orangeArmy.boardTroops().at(target).isPresent())
                     return true;
             }
             case ORANGE -> {
-                if(blueArmy.boardTroops().troopPositions().contains(target))
+                if(blueArmy.boardTroops().at(target).isPresent())
                     return true;
             }
         }

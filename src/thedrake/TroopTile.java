@@ -1,5 +1,8 @@
 package thedrake;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TroopTile implements Tile{
@@ -34,7 +37,12 @@ public class TroopTile implements Tile{
     }
 
     @Override
-    public List<Move> movesFrom(BoardPos pos, GameState state) {
-        return null;
+    public List<Move> movesFrom(BoardPos pos, GameState state){
+        List<Move> result = new ArrayList<>();
+        List<TroopAction> actions = state.armyOnTurn().boardTroops().at(pos).get().troop.actions(face());
+        for (TroopAction iter : actions) {
+            result.addAll(iter.movesFrom(pos,playingSide,state));
+        }
+        return result;
     }
 }

@@ -1,15 +1,29 @@
 package thedrake;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class GameState {
+public class GameState implements JSONSerializable{
     private final Board board;
     private final PlayingSide sideOnTurn;
     private final Army blueArmy;
     private final Army orangeArmy;
     private final GameResult result;
+
+    @Override
+    public void toJSON(PrintWriter writer) {
+        writer.printf("{\"result\":");
+        result.toJSON(writer);
+        writer.printf(",\"board\":");
+        board.toJSON(writer);
+        writer.printf(",\"blueArmy\":");
+        blueArmy.toJSON(writer);
+        writer.printf(",\"orangeArmy\":");
+        orangeArmy.toJSON(writer);
+        writer.printf("}");
+    }
 
     public GameState(
             Board board,
@@ -30,7 +44,6 @@ public class GameState {
         this.orangeArmy = orangeArmy;
         this.result = result;
     }
-
     public Board board() {
         return board;
     }
@@ -136,6 +149,8 @@ public class GameState {
         }
         if(target == TilePos.OFF_BOARD)
             return false;
+        if(board.at(target) != BoardTile.EMPTY)
+            return false;
         switch (sideOnTurn){
             case BLUE -> {
                 if(blueArmy.stack().isEmpty())
@@ -159,7 +174,7 @@ public class GameState {
                 if(orangeArmy.stack().isEmpty())
                     return false;
                 if(!orangeArmy.boardTroops().isLeaderPlaced()){
-                    if(target.j() + 1 != board.dimension() || (blueArmy.boardTroops().leaderPosition().i() == target.i()))
+                    if(target.j() + 1 != board.dimension())
                         return false;
                 }
                 else if(orangeArmy.boardTroops().isPlacingGuards()){

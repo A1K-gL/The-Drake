@@ -1,0 +1,21 @@
+.root {
+    -fx-font-size: 15px;
+    -fx-font-family: sans-serif;
+    -fx-background-color: #ffffaf;
+}
+.button{
+    -fx-font-size: 12px;
+    -fx-font-family: Herculanum;
+}
+#name{
+    -fx-font-size: 40px;
+    -fx-font-family: "Academy Engraved LET";
+}
+#endGameLabel{
+    -fx-font-size: 20px;
+    -fx-font-family: "Academy Engraved LET", cursive;
+}
+#currentPlayer{
+    -fx-font-size: 20px;
+    -fx-font-family: Herculanum;
+}

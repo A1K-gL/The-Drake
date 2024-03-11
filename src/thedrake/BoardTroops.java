@@ -124,12 +124,15 @@ public class BoardTroops implements JSONSerializable{
         writer.printf(",\"guards\":%d,\"troopMap\":{",guards);
         List<BoardPos> keys = troopMap.keySet().stream().toList();
         keys = keys.stream().sorted(Comparator.comparingInt(BoardPos::i).thenComparingInt(BoardPos::j)).toList();
-        for(BoardPos key : keys){
-            key.toJSON(writer);
-            writer.printf(":");
-            troopMap.get(key).toJSON(writer);
-            if(key != keys.getLast())
-                writer.printf(",");
+        int i = 0;
+        if(!keys.isEmpty()) {
+            for (BoardPos key : keys) {
+                key.toJSON(writer);
+                writer.printf(":");
+                troopMap.get(key).toJSON(writer);
+                if (++i != keys.size())
+                    writer.printf(",");
+            }
         }
         writer.printf("}}");
     }

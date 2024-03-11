@@ -27,6 +27,7 @@ public class StandardDrakeSetup {
                     new ShiftAction(-1, 1),
                     new ShiftAction(1, -1),
                     new ShiftAction(-1, -1)));
+
     public final Troop MONK = new Troop(
             "Monk",
             Arrays.asList(
